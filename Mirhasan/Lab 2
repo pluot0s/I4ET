@@ -9,7 +9,7 @@ void setup() {
 void loop() {
   if (Serial.available() > 0) {
     incomingChar = Serial.read();
-    if (incomingChar == 'F') {
+    if (incomingChar == 'M') {
       digitalWrite(ledPin, LOW); // Turn LED on
       Serial.println("LED turned ON");
     } else if (incomingChar == 'N') {
