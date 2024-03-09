@@ -1,1 +1,26 @@
+void setup() 
+{
+  Serial.begin(9600);
+  
+  pinMode(LED_BUILTIN, OUTPUT);
 
+  // Turn off the built-in LED initially
+  digitalWrite(LED_BUILTIN, HIGH);
+
+}
+  
+void loop() {
+  if (Serial.available() > 0) 
+  {
+    char receivedChar = Serial.read();
+
+    if (receivedChar == 'A') {
+      digitalWrite(LED_BUILTIN, LOW);
+      Serial.println("LED turned ON. Proceed with next command........");
+    }
+    else if (receivedChar == 'L') {
+      digitalWrite(LED_BUILTIN, HIGH);
+      Serial.println("LED turned OFF. Proceed with next command........");
+    } 
+  }
+}
