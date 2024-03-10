@@ -10,13 +10,13 @@ void loop() {
     switch (receivedChar) {
       case 'G':
       case 'g':
-        digitalWrite(LED_BUILTIN, HIGH);
+        digitalWrite(LED_BUILTIN, LOW);
         Serial.println("LED ON");
         break;
 
       case 'N':
       case 'n':
-        digitalWrite(LED_BUILTIN, LOW);
+        digitalWrite(LED_BUILTIN, HIGH);
         Serial.println("LED OFF");
         break;
     }
