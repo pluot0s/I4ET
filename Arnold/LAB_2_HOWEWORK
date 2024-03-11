@@ -1,0 +1,20 @@
+char incomingChar;
+
+void setup() {
+  Serial.begin(9600); // Set for serial communication
+  pinMode(ledPin, OUTPUT); // Set LED pin as output
+  Serial.println("Arnold,Peruvian_Machine, waiting for orders!"); 
+}
+
+void loop() {
+  if (Serial.available() > 0) {
+    incomingChar = Serial.read();
+    if (incomingChar == 'A') {
+      digitalWrite(ledPin, LOW); // Turn LED on
+      Serial.println("LED ON,Encendido!");
+    } else if (incomingChar == 'D') {
+      digitalWrite(ledPin, HIGH); // Turn LED off
+      Serial.println("LED OFF, Apagado!");
+    } 
+  }
+}
