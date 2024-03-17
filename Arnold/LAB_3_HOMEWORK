@@ -1,0 +1,48 @@
+#include "pitches.h"
+
+// Notes in the melody:
+int melody[] = {
+  NOTE_C5, NOTE_D5, NOTE_E5, NOTE_F5, NOTE_G5, NOTE_A5, NOTE_B5, NOTE_C6
+};
+
+int duration = 500;
+
+void setup() {
+  Serial.begin(9600);
+  Serial.println("QUE COMIENCE LA FIESTA!!!");
+  Serial.println("A for starting and D for Stopping");
+}
+
+void loop() {
+  bool isPlaying = false;
+
+  while (true) { 
+    if (Serial.available() > 0) {
+      char incomingChar = Serial.read();
+
+      if (incomingChar == 'A' && !isPlaying) { 
+        // Start playing melody
+        Serial.println("Sound started");
+        isPlaying = true;
+
+        for (int thisNote = 0; thisNote < 8; thisNote++) {
+          tone(D1, melody[thisNote], duration);
+          delay(1000);
+
+          if (Serial.available() > 0 && Serial.read() == 'B') { 
+            Serial.println("Sound stopped");
+            isPlaying = false;
+            break; 
+          }
+        }
+
+      } else if (incomingChar == 'D') {
+        Serial.println("Sound stopped (if playing)");
+        isPlaying = false;
+      }
+    }
+    
+    // Small delay to reduce CPU load
+    delay(50); 
+  }
+}
