@@ -29,7 +29,7 @@ void loop() {
           tone(D1, melody[thisNote], duration);
           delay(1000);
 
-          if (Serial.available() > 0 && Serial.read() == 'B') { 
+          if (Serial.available() > 0 && Serial.read() == 'D') { 
             Serial.println("Sound stopped");
             isPlaying = false;
             break; 
@@ -46,3 +46,7 @@ void loop() {
     delay(50); 
   }
 }
+
+
+
+
