@@ -1,1 +1,51 @@
+const int ledPin = D4; // LED PIN
+const int trigPin = D1; // Ultrasonic sensor (Trigger pin)
+const int echoPin = D2; // Ultrasonic sensor (Echo pin)
 
+long duration;
+int distance_cm;
+bool ledState = LOW;
+
+void setup() 
+{
+  Serial.begin(9600);
+  pinMode(trigPin, OUTPUT);
+  pinMode(echoPin, INPUT);
+  pinMode(D4, OUTPUT);
+}
+
+void loop() 
+{
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+  
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+  
+  duration = pulseIn(echoPin, HIGH);
+  
+  // For Calculation of the distance in centimeters
+  distance_cm = duration * 0.034 / 2;
+  
+  // Sending data to Print the distance to the Serial Monitor
+  Serial.print("Distance: ");
+  Serial.print(distance_cm);
+  Serial.println(" cm");
+
+  // Setting distance constraints
+  if (distance_cm < 20) 
+  {
+    digitalWrite(D4, LOW); // Turn LED on if distance is less than 20 cm
+  } 
+  else 
+  {
+    digitalWrite(D4, HIGH); // Turn LED off if distance is greater than 20 cm
+  }
+
+  // Update LED based on the calculated state
+  digitalWrite(ledPin, ledState);
+  
+  // Delay before taking the next measurement
+  delay(1000);
+}
