@@ -1,35 +1,35 @@
-const int sensorPin = A0;    // Analog pin connected to the water level sensor
-const int threshold = 350;   // Threshold value for water level
-const int redPin = D6;        // Red pin of the RGB LED
-const int greenPin = D7;     // Green pin of the RGB LED
-const int bluePin = D8;      // Blue pin of the RGB LED
+const int sensorPin = A0;    
+const int threshold = 350;   
+const int redPin = D6;        
+const int greenPin = D7;     
+const int bluePin = D8;      
 
 void setup() {
-  Serial.begin(9600);        // Initialize serial communication
-  pinMode(redPin, OUTPUT);   // Set redPin as an output
-  pinMode(greenPin, OUTPUT); // Set greenPin as an output
-  pinMode(bluePin, OUTPUT);  // Set bluePin as an output
+  Serial.begin(9600);        
+  pinMode(redPin, OUTPUT);   
+  pinMode(greenPin, OUTPUT); 
+  pinMode(bluePin, OUTPUT);  
 }
 
 void loop() {
-  int sensorValue = analogRead(sensorPin); // Read the sensor value
+  int sensorValue = analogRead(sensorPin); 
   Serial.print("Sensor value: ");
   Serial.println(sensorValue);
 
   if (sensorValue > threshold) {
     // Water level is above 350
-    digitalWrite(redPin, HIGH);    // Turn on red LED
-    digitalWrite(greenPin, LOW);   // Turn off green LED
-    digitalWrite(bluePin, LOW);    // Turn off blue LED
+    digitalWrite(redPin, HIGH);    
+    digitalWrite(greenPin, LOW);   
+    digitalWrite(bluePin, LOW);    
     Serial.println("Water level is above 350");
-    // You can add additional actions here if needed
+   
   } else {
     // Water level is 350
-    digitalWrite(redPin, LOW);     // Turn off red LED
-    digitalWrite(greenPin, HIGH);  // Turn on green LED
-    digitalWrite(bluePin, LOW);    // Turn off blue LED
+    digitalWrite(redPin, LOW);     
+    digitalWrite(greenPin, HIGH);  
+    digitalWrite(bluePin, LOW);    
     Serial.println("Water level is below 350");
-    // You can add additional actions here if needed
+   
   }
 
   delay(1000); // Delay for stability
