@@ -1,0 +1,25 @@
+const int sensorPin = A0; // Analog pin connected to the sensor (LDR)
+
+void setup() {
+  pinMode(sensorPin, INPUT); // Set sensor pin as input
+  Serial.begin(9600);        // Initialize serial communication
+}
+
+void loop() {
+  // Read the sensor value (0 - 1023)
+  int sensorValue = analogRead(sensorPin);
+
+  // Map the sensor value (0 - 1023) to LED brightness (0 - 255)
+  int brightness = map(sensorValue, 0, 1023, 0, 255);
+
+  // Print sensor value and LED brightness to Serial Monitor
+  Serial.print("Sensor Value: ");
+  Serial.print(sensorValue);
+  Serial.print(", Brightness: ");
+  Serial.println(brightness);
+
+  // Set the LED brightness
+  analogWrite(9, brightness); // Assuming the LED is connected to pin 9
+
+  delay(100); // Delay for stability
+}
