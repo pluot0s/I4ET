@@ -1,0 +1,54 @@
+//pluot0s
+
+#include <Arduino_ConnectionHandler.h>
+#include <ArduinoIoTCloud.h>
+
+const char THING_ID[] = "35acc538-d956-4955-9c35-06e1eb42f239";
+
+const char SSID[]     = iPhone;    
+const char PASSWORD[] = 7012002Sm;   
+
+const int waterSensorPin = A0; 
+const int redPin = 9; 
+const int greenPin = 10; 
+const int bluePin = 11; 
+const int switchPin = 2; 
+
+int waterLevel = 0; 
+int redValue = 0; 
+int switchState = 0; 
+
+void initProperties() {
+  ArduinoCloud.setThingId(THING_ID);
+  ArduinoCloud.addProperty(waterLevel, "water_level", READ, NULL);
+  ArduinoCloud.addProperty(redValue, "red_value", READWRITE, NULL);
+  ArduinoCloud.addProperty(switchState, "switch_state", READWRITE, NULL);
+}
+
+void setup() {
+  Serial.begin(9600);
+  pinMode(waterSensorPin, INPUT);
+  pinMode(redPin, OUTPUT);
+  pinMode(greenPin, OUTPUT);
+  pinMode(bluePin, OUTPUT);
+  pinMode(switchPin, INPUT_PULLUP);
+  ArduinoCloud.begin(ArduinoIoTPreferredConnection);
+  initProperties();
+}
+
+void loop() {
+  ArduinoCloud.update();
+
+  waterLevel = analogRead(waterSensorPin);
+  
+  if (waterLevel > 350) {
+    redValue = 255; // Turn red LED on
+  } else {
+    redValue = 0; // Turn red LED off
+  }
+
+  // Read switch state
+  switchState = digitalRead(switchPin);
+
+  delay(1000); // Adjust delay as needed
+}
