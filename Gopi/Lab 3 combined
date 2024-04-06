@@ -1,0 +1,47 @@
+#include <NewPingESP8266.h>
+
+const int sensorPin = A0; // Analog pin connected to the sensor (LDR)
+#define TRIGGER_PIN D1
+#define ECHO_PIN D2
+#define MAX_DISTANCE 200 // Maximum distance we want to ping for (in centimeters). Maximum sensor distance is 400-500cm.
+
+NewPingESP8266 sonar(TRIGGER_PIN, ECHO_PIN, MAX_DISTANCE); // Initialization of the sonar
+
+void setup() {
+  pinMode(sensorPin, INPUT); // Set sensor pin as input
+  pinMode(9, OUTPUT); // Set LED pin as output
+  Serial.begin(9600); // Initialize serial communication
+}
+
+void loop() {
+  // Read the sensor value (0 - 1023)
+  int sensorValue = analogRead(sensorPin);
+
+  // Map the sensor value (0 - 1023) to LED brightness (0 - 255)
+  int brightness = map(sensorValue, 0, 1023, 0, 255);
+
+  // Print sensor value and LED brightness to Serial Monitor
+  Serial.print("Sensor Value: ");
+  Serial.print(sensorValue);
+  Serial.print(", Brightness: ");
+  Serial.println(brightness);
+
+  // Send ping, get ping time in microseconds (us)
+  unsigned int us = sonar.ping();
+  int distance = us / US_ROUNDTRIP_CM; // Convert ping time to distance in centimeters
+
+  // Print distance measured by sonar
+  Serial.print("Ping: ");
+  Serial.print(distance);
+  Serial.println("cm");
+
+  // Check condition from code 2
+  if (distance <= 50) { // Change this condition based on your requirement
+    // Set the LED brightness
+    analogWrite(9, brightness); // Assuming the LED is connected to pin 9
+  } else {
+    analogWrite(9, 0); // Turn off the LED if condition is not met
+  }
+
+  delay(100); // Delay for stability
+}
