@@ -1,0 +1,59 @@
+#include "thingProperties.h"
+#include <NewPingESP8266.h>
+
+#define TRIGGER_PIN D1
+#define ECHO_PIN D2
+#define BUZZER_PIN D3
+#define MAX_DISTANCE 100
+
+NewPingESP8266 sonar(TRIGGER_PIN, ECHO_PIN,MAX_DISTANCE);
+
+void setup() {
+  // Initialize serial and wait for port to open:
+  Serial.begin(9600);
+  // This delay gives the chance to wait for a Serial Monitor without blocking if none is found
+  delay(1500); 
+  pinMode(BUZZER_PIN, OUTPUT);
+
+  // Defined in thingProperties.h
+  initProperties();
+
+  // Connect to Arduino IoT Cloud
+  ArduinoCloud.begin(ArduinoIoTPreferredConnection);
+  
+  /*
+     The following function allows you to obtain more information
+     related to the state of network and IoT Cloud connection and errors
+     the higher number the more granular information you’ll get.
+     The default is 0 (only errors).
+     Maximum is 4
+ */
+  setDebugMessageLevel(2);
+  ArduinoCloud.printDebugInfo();
+}
+
+void loop() {
+  ArduinoCloud.update();
+  // Your code here 
+  float cm = sonar.ping_cm(); 
+  altura = cm;
+
+  if (cm < 20) {
+    alarma = true;
+    digitalWrite(BUZZER_PIN, HIGH);
+  } else {
+    alarma = false;
+    digitalWrite(BUZZER_PIN, LOW);
+  }
+  
+  
+}
+
+
+/*
+  Since Altura is READ_WRITE variable, onAlturaChange() is
+  executed every time a new value is received from IoT Cloud.
+*/
+void onAlturaChange()  {
+  // Add your code here to act upon Altura change
+}
