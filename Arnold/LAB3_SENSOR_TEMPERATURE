@@ -1,0 +1,37 @@
+#include <OneWire.h> 
+#include <DallasTemperature.h>
+
+// Define the pin connected to the one-wire bus
+#define ONE_WIRE_BUS D1 
+
+// Create an instance of the OneWire class for communication
+OneWire oneWire(ONE_WIRE_BUS);
+
+// Create an instance of the DallasTemperature class for the sensor
+DallasTemperature sensors(&oneWire);
+
+void setup(void) {
+  // Start serial communication for debugging output
+  Serial.begin(9600); 
+  Serial.println("Starting to measure temperature...");
+
+  // Initialize the temperature sensor communication
+  sensors.begin();
+}
+
+void loop(void) {
+  // Wait for 3 seconds before the next reading
+  delay(3000); 
+
+  // Notify that a temperature request is happening
+  Serial.print("Requesting temperature...");  
+
+  // Request temperature readings from the sensor
+  sensors.requestTemperatures();
+
+  Serial.println("DONE"); // Indicate request completion
+ 
+  // Print and read the temperature in Celsius
+  Serial.print("Temperature is: "); 
+  Serial.println(sensors.getTempCByIndex(0)); 
+}
