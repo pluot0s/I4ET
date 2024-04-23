@@ -1,0 +1,75 @@
+//SPDX-License-Identifier: GPL-3.0
+//PERUVIAN MACHINE
+pragma solidity ^0.8.10;
+
+contract Factory {
+    uint idDigits = 16;
+    uint idModulus = 10 ** idDigits;
+
+    struct Product{
+        
+        uint id;
+        string name;
+        
+    }
+
+    Product[] public products;
+
+    event NewProduct(uint indexed ArrayProductId, string name, uint id);
+
+    function _createProduct(string memory _name, uint _id) private {
+
+        uint index = products.length;
+        products.push(Product(_id, _name));
+        emit NewProduct(index, _name, _id);
+    }
+
+    
+    function _generateRandomId(string memory _str) private view returns (uint) {
+        //hasssshhhhh
+        uint rand = uint(keccak256(abi.encodePacked(_str)));
+        return rand % idModulus;
+    }
+
+    function createRandomProduct(string memory _name) public {
+        uint randId = _generateRandomId(_name);
+        _createProduct(_name, randId);
+    }
+
+    mapping(uint => address) public productToOwner;
+    mapping(address => uint) public ownerProductCount;
+
+    function Ownership(uint _productId) public {
+        require(productToOwner[_productId] == address(0), "Product already has an owner");
+    
+        productToOwner[_productId] = msg.sender;
+        ownerProductCount[msg.sender]++;
+    }
+
+    function getProductsByOwner(address _owner) external view returns (uint[] memory) {
+        uint counter = 0;
+        uint[] memory result = new uint[](ownerProductCount[_owner]);
+
+        for (uint i = 0; i < products.length; i++) {
+            if (productToOwner[products[i].id] == _owner) {
+            result[counter] = products[i].id;
+            counter++;
+            }
+        }
+
+        return result;
+    }
+
+    mapping(uint => uint) public age; // Mapping to store user's age
+
+    modifier olderThan(uint _age, uint _userId) {
+        require(age[_userId] >= _age, "User is not older than the specified age");
+        _;
+    }
+
+    function validationUsers(uint _userId) public view olderThan(18, _userId) {
+        // Leave the body of the function blank as requested
+    }
+
+}
+
