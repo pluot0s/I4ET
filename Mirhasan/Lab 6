@@ -1,1 +1,85 @@
+// Code by pluot0s
+// SPDX-License-Identifier: GPL-3.0
+pragma solidity ^0.8.10;
+
+contract CarShop {
+    uint idDigits = 16;
+    uint idModulus = 10 ** idDigits;
+
+    struct Car {
+        uint id;
+        string name;
+        uint price;
+        uint quantity;
+    }
+
+    Car[] public cars;
+
+    event NewCar(uint indexed CarId, string name, uint id, uint price, uint quantity);
+    event CarSold(uint indexed CarId, uint quantity);
+
+    function _createCar(string memory _name, uint _price, uint _quantity) private {
+        uint index = cars.length;
+        uint randId = _generateRandomId(_name);
+        cars.push(Car(randId, _name, _price, _quantity));
+        emit NewCar(index, _name, randId, _price, _quantity);
+    }
+
+    function _generateRandomId(string memory _str) private view returns (uint) {
+        uint rand = uint(keccak256(abi.encodePacked(_str)));
+        return rand % idModulus;
+    }
+
+    function createCar(string memory _name, uint _price, uint _quantity) public {
+        _createCar(_name, _price, _quantity);
+    }
+
+    mapping(uint => address) public carToOwner;
+    mapping(address => uint) public ownerCarCount;
+
+    function buyCar(uint _carId, uint _quantity) public {
+        require(_quantity > 0, "Invalid quantity");
+        require(cars[_carId].quantity >= _quantity, "Not enough cars in stock");
+
+        cars[_carId].quantity -= _quantity;
+
+        if (carToOwner[_carId] == address(0)) {
+            ownerCarCount[msg.sender]++;
+        }
+        
+        carToOwner[_carId] = msg.sender;
+        
+        emit CarSold(_carId, _quantity);
+    }
+
+    function getCarsByOwner(address _owner) external view returns (uint[] memory) {
+        uint counter = 0;
+        uint[] memory result = new uint[](ownerCarCount[_owner]);
+
+        for (uint i = 0; i < cars.length; i++) {
+            if (carToOwner[cars[i].id] == _owner) {
+                result[counter] = cars[i].id;
+                counter++;
+            }
+        }
+
+        return result;
+    }
+
+    mapping(uint => uint) public age; // Mapping to store user's age
+
+    modifier olderThan(uint _age, uint _userId) {
+        require(age[_userId] >= _age, "User is not older than the specified age");
+        _;
+    }
+
+    function validateUser(uint _userId) public view olderThan(18, _userId) {
+        // Leave the body of the function blank as requested
+    }
+
+    function updateStock(uint _carId, uint _quantity) public {
+        require(cars[_carId].id != 0, "Car does not exist");
+        cars[_carId].quantity += _quantity;
+    }
+}
 
