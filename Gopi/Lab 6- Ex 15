@@ -57,6 +57,5 @@ contract DemoContract {
         users[owner].tokens -= tokensToPurchase;
 
         // Add purchased tokens to the buyer's balance
-        users[msg.sender].tokens += tokensToPurchase;
-    }
+        users[msg.sender].tokens += tokensToPurchase;}
 }
