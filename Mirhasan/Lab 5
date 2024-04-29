@@ -1,51 +1,45 @@
 //pluot0s
 
-#include <Arduino_ConnectionHandler.h>
-#include <ArduinoIoTCloud.h>
 
-const char THING_ID[] = "35acc538-d956-4955-9c35-06e1eb42f239";
+/* Fill-in information from Blynk Device Info here */
+#define BLYNK_TEMPLATE_ID       "TMPL5hrz-QU4R"
+#define BLYNK_TEMPLATE_NAME     "I4ET"
+#define BLYNK_AUTH_TOKEN        "hrV35p71x7kwu9_isaB8KgkdibUM91aJ"
 
-const char SSID[]     = iPhone;    
-const char PASSWORD[] = 7012002Sm;   
+/* Comment this out to disable prints and save space */
+#define BLYNK_PRINT Serial
 
-const int waterSensorPin = A0; 
-const int redPin = 9; 
-const int greenPin = 10; 
-const int bluePin = 11; 
-const int switchPin = 2; 
 
-int waterLevel = 0; 
-int redValue = 0; 
-int switchState = 0; 
+#include <ESP8266WiFi.h>
+#include <BlynkSimpleEsp8266.h>
 
-void initProperties() {
-  ArduinoCloud.setThingId(THING_ID);
-  ArduinoCloud.addProperty(waterLevel, "water_level", READ, NULL);
-  ArduinoCloud.addProperty(redValue, "red_value", READWRITE, NULL);
-  ArduinoCloud.addProperty(switchState, "switch_state", READWRITE, NULL);
+// Your WiFi credentials.
+// Set password to "" for open networks.
+char ssid[] = "iPhone";
+char pass[] = "7012002sm";
+
+void setup()
+{
+  // Debug console
+  Serial.begin(115200);
+
+  Blynk.begin(BLYNK_AUTH_TOKEN, ssid, pass);
+  // You can also specify server:
+  //Blynk.begin(BLYNK_AUTH_TOKEN, ssid, pass, "blynk.cloud", 80);
+  //Blynk.begin(BLYNK_AUTH_TOKEN, ssid, pass, IPAddress(192,168,1,100), 8080);
 }
 
-void setup() {
-  Serial.begin(9600);
-  pinMode(waterSensorPin, INPUT);
-  pinMode(redPin, OUTPUT);
-  pinMode(greenPin, OUTPUT);
-  pinMode(bluePin, OUTPUT);
-  pinMode(switchPin, INPUT_PULLUP);
-  ArduinoCloud.begin(ArduinoIoTPreferredConnection);
-  initProperties();
-}
-
-void loop() {
-  ArduinoCloud.update();
-
-  waterLevel = analogRead(waterSensorPin);
+void loop()
+{
+ Blynk.run();
   
-  if (waterLevel > 350) {
-    redValue = 255; // Turn red LED on
-  } else {
-    redValue = 0; // Turn red LED off
-  }
+  int waterLevel = analogRead(waterLevel);
+  int waterLevelPercentage = map(waterLevel, 0, 1100, 0, 220);
+  
+  Blynk.virtualWrite(V1, waterLevelPercentage); // Update water level on Blynk app
+  delay(1000);
+}
+
 
   // Read switch state
   switchState = digitalRead(switchPin);
