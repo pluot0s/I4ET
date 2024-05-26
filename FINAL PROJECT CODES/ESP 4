@@ -1,1 +1,92 @@
+#include "thingProperties.h"
+#include <Servo.h>
 
+// Define the pins
+const int servoPin = D7; // GPIO pin for servo (e.g., D1 on ESP8266)
+const int buzzerPin = D5; // GPIO pin for buzzer (e.g., D2 on ESP8266)
+
+Servo myServo;
+
+void setup() {
+  Serial.begin(9600);
+
+  // Attach the servo to the defined pin
+  myServo.attach(servoPin);
+
+  // Set the buzzer pin as output
+  pinMode(buzzerPin, OUTPUT);
+
+  // Initialize Cloud Properties
+  initProperties();
+
+  // Connect to WiFi
+  Serial.print("Connecting to WiFi");
+  WiFi.begin(SSID, PASS);
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+  Serial.println("Connected to WiFi!");
+
+  // Connect to Arduino IoT Cloud
+  ArduinoCloud.begin(ArduinoIoTPreferredConnection);
+
+  // Wait for the cloud connection
+  Serial.print("Connecting to Arduino IoT Cloud");
+  while (!ArduinoCloud.connected()) {
+    ArduinoCloud.update();
+    delay(500);
+    Serial.print(".");
+  }
+  Serial.println("Connected to Arduino IoT Cloud!");
+}
+
+void loop() {
+  ArduinoCloud.update(); // Maintain IoT Cloud connection
+}
+
+void onBuzzerControlChange() {
+  if (buzzerControl) {
+    digitalWrite(buzzerPin, HIGH); // Turn on the buzzer
+  } else {
+    digitalWrite(buzzerPin, LOW); // Turn off the buzzer
+  }
+}
+
+void onServoPositionChange() {
+  int targetAngle = map(servoPosition, 1, 4, 0, 180); // Map servoPosition to an angle from 0 to 180
+
+  int currentAngle = myServo.read(); // Get the current angle of the servo
+  if (targetAngle != currentAngle) {
+    unsigned long startTime = millis();
+    const unsigned long buzzerDuration = 500; // Buzzer duration in milliseconds
+    servoMoving = true; // Turn on the LED widget
+    ArduinoCloud.update(); // Ensure the cloud state is updated immediately
+    if (targetAngle > currentAngle) {
+      for (int angle = currentAngle; angle <= targetAngle; angle++) {
+        myServo.write(angle);
+        digitalWrite(buzzerPin, HIGH); // Turn on the buzzer
+        delay(15);
+        if (millis() - startTime >= buzzerDuration) {
+          digitalWrite(buzzerPin, LOW);
+        }
+      }
+    } else {
+      for (int angle = currentAngle; angle >= targetAngle; angle--) {
+        myServo.write(angle);
+        digitalWrite(buzzerPin, HIGH); // Turn on the buzzer
+        delay(15);
+        if (millis() - startTime >= buzzerDuration) {
+          digitalWrite(buzzerPin, LOW);
+        }
+      }
+    }
+    digitalWrite(buzzerPin, LOW); // Ensure buzzer is off after movement
+    servoMoving = false; // Turn off the LED widget
+    ArduinoCloud.update(); // Ensure the cloud state is updated immediately
+  }
+}
+
+void onServoMovingChange() {
+  // This function is needed but can be left empty if no additional action is required
+}
