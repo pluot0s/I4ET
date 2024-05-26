@@ -1,1 +1,51 @@
+#include "thingProperties.h"
 
+#define RELAY_PIN D1  // Define the pin where the relay is connected. Adjust if needed.
+
+void setup() {
+  // Initialize the relay pin as an output
+  pinMode(RELAY_PIN, OUTPUT);
+  digitalWrite(RELAY_PIN, LOW); // Ensure the relay is off at the start
+
+  // Initialize serial communication
+  Serial.begin(115200); 
+  delay(1500); 
+
+  // Initialize the IoT Cloud properties
+  initProperties();
+
+  // Connect to Arduino IoT Cloud
+  ArduinoCloud.begin(ArduinoIoTPreferredConnection);
+
+  // Set debug messages
+  setDebugMessageLevel(2);
+  ArduinoCloud.printDebugInfo();
+}
+
+void loop() {
+  // This function allows IoT Cloud to run
+  ArduinoCloud.update();
+  
+  // Relay control based on the cloud variable
+  if (relayState) {
+    digitalWrite(RELAY_PIN, HIGH); // Turn relay on
+  } else {
+    digitalWrite(RELAY_PIN, LOW); // Turn relay off
+  }
+}
+
+// Callback function for relayState change
+void onRelayStateChange() {
+  if (relayState) {
+    Serial.println("Relay is ON"); // Print relay status
+  } else {
+    Serial.println("Relay is OFF"); // Print relay status
+  }
+}
+
+/*
+  Since LedStatus is READ_WRITE variable, onLedStatusChange() is
+  executed every time a new value is received from IoT Cloud.
+*/
+void onLedStatusChange()  {
+}
